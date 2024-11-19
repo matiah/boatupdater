@@ -1,0 +1,48 @@
+blueprint:
+  name: Update Boat Coordinates from Lat/Long Input Texts
+  description: Updates a device tracker with GPS coordinates based on changes in specified input_text sensors for latitude and longitude.
+  domain: automation
+  input:
+    latitude_input:
+      name: Latitude Input Text
+      description: The entity used for latitude
+      selector:
+        entity:
+          domain: 
+            - input_text
+            - sensor
+    longitude_input:
+      name: Longitude Input Text
+      description: The entity used for longitude
+      selector:
+        entity:
+          domain: 
+            - input_text
+            - sensor
+    device_tracker_id:
+      name: Boat ID
+      description: The ID of the boat in the map.
+      selector:
+        text:
+
+variables:
+  latitude: !input latitude_input
+  longitude: !input longitude_input 
+  device_id: !input device_tracker_id 
+        
+trigger:
+  - platform: state
+    entity_id: !input latitude_input
+  - platform: state
+    entity_id: !input longitude_input
+    
+
+condition: []
+action:
+  - service: device_tracker.see
+    data:
+      dev_id: !input device_tracker_id
+      gps:
+      - '{{ states(latitude)}}'
+      - '{{ states(longitude)}}'
+mode: single
